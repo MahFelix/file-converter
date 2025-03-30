@@ -20,8 +20,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -30,7 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.pdfbox.io.RandomAccessReadBuffer;
+
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 @Service
 public class FileConversionService {
@@ -223,7 +223,7 @@ public class FileConversionService {
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
                 // Usar uma fonte mais compatível (Helvetica)
-                contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
 
                 // Iniciar o bloco de texto
                 contentStream.beginText();
@@ -324,7 +324,7 @@ public class FileConversionService {
     }
 
     private byte[] convertPdfToTxt(byte[] pdfBytes) throws IOException {
-        try (PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(pdfBytes))) {
+        try (PDDocument doc =  PDDocument.load(pdfBytes);) {
             PDFTextStripper stripper = new PDFTextStripper();
             return stripper.getText(doc).getBytes(StandardCharsets.UTF_8);
         }
@@ -435,7 +435,7 @@ public class FileConversionService {
 
             PDPageContentStream contentStream = new PDPageContentStream(pdfDoc, page);
             contentStream.beginText();
-            contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
             contentStream.newLineAtOffset(50, 750);
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -461,7 +461,7 @@ public class FileConversionService {
                     pdfDoc.addPage(page);
                     contentStream = new PDPageContentStream(pdfDoc, page);
                     contentStream.beginText();
-                    contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                    contentStream.setFont(PDType1Font.HELVETICA, 12);
                     contentStream.newLineAtOffset(50, 750);
                     rowNum = 0;
                 }
@@ -654,7 +654,7 @@ public class FileConversionService {
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page)) {
                 contentStream.beginText();
-                contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 12);
+                contentStream.setFont(PDType1Font.COURIER, 12); // ✅ Usar PDType1Font
                 contentStream.newLineAtOffset(50, 700);
 
                 String[] lines = text.split("\n");
@@ -809,7 +809,7 @@ public class FileConversionService {
     }
 
     private byte[] convertPdfToDocx(byte[] pdfBytes) throws IOException {
-        try (PDDocument pdf = Loader.loadPDF(new RandomAccessReadBuffer(pdfBytes));
+        try (PDDocument pdf = PDDocument.load(pdfBytes);  // ✅ Usar PDDocument.load() diretamente
              XWPFDocument doc = new XWPFDocument()) {
 
             PDFTextStripper stripper = new PDFTextStripper();
@@ -828,7 +828,7 @@ public class FileConversionService {
     }
 
     private byte[] convertPdfToPptx(byte[] pdfBytes) throws IOException {
-        try (PDDocument pdf = Loader.loadPDF(new RandomAccessReadBuffer(pdfBytes));
+        try (PDDocument pdf =PDDocument.load(pdfBytes);
              XMLSlideShow ppt = new XMLSlideShow()) {
 
 
@@ -855,7 +855,7 @@ public class FileConversionService {
     }
 
     private byte[] convertPdfToHtml(byte[] pdfBytes) throws IOException {
-        try (PDDocument pdf = Loader.loadPDF(new RandomAccessReadBuffer(pdfBytes))) {
+        try (PDDocument pdf = PDDocument.load(pdfBytes);) {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(pdf);
 
@@ -875,7 +875,7 @@ public class FileConversionService {
     }
 
     private byte[] convertPdfToJson(byte[] pdfBytes) throws IOException {
-        try (PDDocument pdf = Loader.loadPDF(new RandomAccessReadBuffer(pdfBytes))) {
+        try (PDDocument pdf = PDDocument.load(pdfBytes);) {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(pdf);
 
