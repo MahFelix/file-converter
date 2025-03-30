@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://file-converter-frontend-gamma.vercel.app/")
 public class FileController {
 
     private final FileConversionService conversionService;
